@@ -103,23 +103,42 @@ def best_guess(starting_criteria):
     common_letters = 0 # the number of most common letters to try 
     potential_guesses = []
 
+    
+
     while not found_match:
         available_letters = []
 
+        exact_letters = dict()
+        required_letters = set()
+
         for letter in starting_criteria:
-            print(letter)
-            available_letters.append(letter)
+            if starting_criteria[letter] == 0:
+                available_letters.append(letter)
+                required_letters.add(letter)
+            else:
+                exact_letters[int(starting_criteria[letter]) - 1] = letter
 
         for i in range(common_letters):
             available_letters.append(letter_frequency_sorted[i][0])
 
-        print(available_letters)
+        print("available letters: ", available_letters)
 
         # loop through all possible words
         for word in possible_words:
             possible = True
-            for char in word:
+            for i, char in enumerate(word):
+                # first check aligns with known exact letters
+                if i in exact_letters and exact_letters[i] != char:
+                    possible = False
+                    break
+
                 if char not in available_letters:
+                    possible = False
+                    break
+
+            # also check it includes required letters (where position is unknown)
+            for required_letter in required_letters:
+                if required_letter not in word:
                     possible = False
                     break
             
@@ -142,6 +161,11 @@ def best_guess(starting_criteria):
 
 
 best_guess(starting_criteria)
+
+
+# things to improve:
+# sometimes repeated letters are necessary
+# make sure we can get account for the possibility of exact letters being repeated
 
 
 
