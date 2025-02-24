@@ -76,10 +76,11 @@ print(letter_frequency_sorted)
 starting_criteria =  {'b': '2', 'y': '5', 'a': 0} 
 known_letters = ['', 'b', '', '', 'y']
 unknown_letters = ['a']
+unwanted_letters = ['e']
 #abbey
 
 # find the best guess
-def best_guess(known_letters, unknown_letters):
+def best_guess(known_letters, unknown_letters, unwanted_letters):
     # this will be based on 2 things:
     # 1 - starting criteria (if info has been gained form previous guesses, we will use it to form our next guess)
     # 2 - try to use most common letters whilst also avoiding repeated letters if possible     
@@ -125,6 +126,11 @@ def best_guess(known_letters, unknown_letters):
                     possible = False
                     break
 
+                # check there's no unwanted letters - red letters
+                if char in unwanted_letters:
+                    possible = False
+                    break   
+
             # also check it includes required letters (where position is unknown)
             for required_letter in required_letters:
                 if required_letter not in word:
@@ -155,81 +161,7 @@ def best_guess(known_letters, unknown_letters):
     return most_commonly_used_word(potential_guesses_str)
 
 
-# def best_guess(starting_criteria):
-#     # this will be based on 2 things:
-#     # 1 - starting criteria (if info has been gained form previous guesses, we will use it to form our next guess)
-#     # 2 - try to use most common letters whilst also avoiding repeated letters if possible     
-
-#     found_match = False
-#     common_letters = 0 # the number of most common letters to try 
-#     potential_guesses = []
-
-#     while not found_match:
-#         available_letters = []
-
-#         exact_letters = dict() # letters where we know the exact position
-#         required_letters = set() # letters we know are part of the word (and so are required) but we don't know the position
-
-#         for letter in starting_criteria:
-#             if starting_criteria[letter] == 0:
-#                 available_letters.append(letter)
-#                 required_letters.add(letter)
-#             else:
-#                 exact_letters[int(starting_criteria[letter]) - 1] = letter
-
-#         print(exact_letters)
-
-#         for i in range(common_letters):
-#             letter_to_add = letter_frequency_sorted[i][0]
-#             if letter_to_add not in available_letters:
-#                 available_letters.append(letter_to_add)
-
-#         print("available letters: ", available_letters)
-
-#         # loop through all possible words
-#         for word in possible_words:
-#             possible = True
-#             for i, char in enumerate(word):
-#                 # first check aligns with known exact letters
-#                 if i in exact_letters and exact_letters[i] != char:
-#                     possible = False
-#                     break
-
-#                 if char not in available_letters:
-#                     possible = False
-#                     break
-
-#             # also check it includes required letters (where position is unknown)
-#             for required_letter in required_letters:
-#                 if required_letter not in word:
-#                     possible = False
-#                     break
-            
-#             # first try to find guesses without any repetition
-#             if possible and repeated_letters(word) == False:
-#                 potential_guesses.append(word)
-#                 found_match = True
-            
-#             # if we haven't found any guesses without repetition, try with
-#             if possible and len(potential_guesses) == 0:
-#                 potential_guesses.append(word)
-#                 found_match = True
-
-#         common_letters += 1
-
-
-#     print(potential_guesses)
-
-#     # worth evaluating which word most commonly appears in texts as this will be more likely to be a correct guess
-#     potential_guesses_str = ""
-#     for guess in potential_guesses:
-#         potential_guesses_str += guess + ","
-
-
-#     return most_commonly_used_word(potential_guesses_str)
-
-#best_guess(known_letters, unknown_letters)
-#best_guess(starting_criteria)
+#best_guess(known_letters, unknown_letters, unwanted_letters)
 
 # things to improve:
 # I would like to get the bot to play automtically, I believe i can do this by using selenium to control a web browser

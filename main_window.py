@@ -9,26 +9,27 @@ from guess_calculator import best_guess
 import sys
 
 class MainWindow(QWidget):
-    def __init__(self):
+    def __init__(self, known_location, unknown_locations, unwanted):
         super().__init__()
+        print("init - ", known_location, unknown_locations, unwanted)
         self.setWindowTitle("Wordle Bot")
         self.setGeometry(100, 100, 400, 200)
         
         self.main_layout = QVBoxLayout(self)
 
-        # self.known_location_inputs = []
-        # self.unknown_location_inputs = []
-        # self.unwanted_letters = []
+        self.init_ui(known_location, unknown_locations, unwanted)
 
-        self.known_location_inputs = ['a', '', 's', '', '']
-        self.unknown_location_inputs = ['p', 'r']
-        self.unwanted_letters = ['c', 'h']
+    def init_ui(self, known_location, unknown_locations, unwanted):
+
+        self.known_location_inputs = known_location
+        self.unknown_location_inputs = unknown_locations
+        self.unwanted_letters = unwanted
+
+        # self.known_location_inputs = ['a', '', 's', '', '']
+        # self.unknown_location_inputs = ['p', 'r']
+        # self.unwanted_letters = ['c', 'h']
 
         self.letter_list = LetterList("Unwanted Letters", self.unwanted_letters)
-
-        self.init_ui()
-
-    def init_ui(self):
 
         print(self.known_location_inputs)
         print(self.unknown_location_inputs)
@@ -126,24 +127,28 @@ class MainWindow(QWidget):
 
         self.clear_page()
 
-        guess = best_guess(known_letters, unknown_letters)
+        guess = best_guess(known_letters, unknown_letters, unwanted_letters)
         #guess = "words"
-        answer_label = QLabel(f"The bot's guess is: {guess}")
-        answer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        answer_label.setStyleSheet("font-size: 18px; font-weight: bold;")
-        next_guess_button_layout = QHBoxLayout()
-        next_guess_button = QPushButton("next_guess!")
-        next_guess_button.setFixedWidth(100)
-        next_guess_button_layout.addWidget(next_guess_button)
-        next_guess_button.clicked.connect(self.on_next_guess_button_clicked)
-        self.main_layout.addWidget(answer_label)
-        self.main_layout.addLayout(next_guess_button_layout)
+
+        self.answer_label = QLabel(f"The bot's guess is: {guess}")
+        self.answer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.answer_label.setStyleSheet("font-size: 18px; font-weight: bold;")
+        self.next_guess_button_layout = QHBoxLayout()
+        self.next_guess_button = QPushButton("next_guess!")
+        self.next_guess_button.setFixedWidth(100)
+        self.next_guess_button_layout.addWidget(self.next_guess_button)
+
+        self.next_guess_button.clicked.connect(self.on_next_guess_button_clicked)
+
+        self.main_layout.addWidget(self.answer_label)
+        self.main_layout.addLayout(self.next_guess_button_layout)
 
     def on_next_guess_button_clicked(self):
         self.clear_page()
-        self.init_ui()
+        self.init_ui(self.known_location_inputs, self.unknown_location_inputs, self.unwanted_letters) 
 
     def clear_page(self):
+        print("clear_page")
          # Remove current widget features
         for i in reversed(range(self.main_layout.count())):
             item = self.main_layout.itemAt(i)
