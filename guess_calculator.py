@@ -86,7 +86,7 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
     # 2 - try to use most common letters whilst also avoiding repeated letters if possible     
 
     found_match = False
-    common_letters = 0 # the number of most common letters to try 
+    common_letters = 5 # the number of most common letters to try 
     potential_guesses = []
 
     while not found_match:
@@ -165,7 +165,5 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
 
 # things to improve:
 # I would like to get the bot to play automtically, I believe i can do this by using selenium to control a web browser
-
-
-#{1: 'b', 4: 'y'}
-
+# Improve UI 
+# Show other possible guesses if there are any
