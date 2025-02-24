@@ -18,9 +18,13 @@ class MainWindow(QWidget):
 
         # self.known_location_inputs = []
         # self.unknown_location_inputs = []
+        # self.unwanted_letters = []
 
         self.known_location_inputs = ['a', '', 's', '', '']
         self.unknown_location_inputs = ['p', 'r']
+        self.unwanted_letters = ['c', 'h']
+
+        self.letter_list = LetterList("Unwanted Letters", self.unwanted_letters)
 
         self.init_ui()
 
@@ -63,16 +67,16 @@ class MainWindow(QWidget):
         self.main_layout.addWidget(self.group_box)
 
         add_button_layout = QHBoxLayout()
-        add_button_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
-        add_button_layout.setSpacing(0)  # Reduce spacing
+        add_button_layout.setContentsMargins(0, 0, 0, 0)  
+        add_button_layout.setSpacing(0)  
         add_button = QPushButton("Add")
         add_button.setFixedWidth(100)
         add_button_layout.addWidget(add_button)
-        add_button.clicked.connect(self.add_line)
+        add_button.clicked.connect(lambda: self.add_line())
 
         for i in range(len(self.unknown_location_inputs)):
-            if isinstance(self.unknown_location_inputs[i], QLineEdit):  
-                self.add_line(self.unknown_location_inputs[i].text())  
+            letter = self.unknown_location_inputs[i]
+            self.add_line(letter)  
         self.group_box_layout.addLayout(add_button_layout)
 
         separator = Separator()
@@ -80,8 +84,7 @@ class MainWindow(QWidget):
 
         # Need to add letters that are NOT in the word, add this as an object - LetterList
         label = "Add letters that are not in the word: "
-        letter_list = LetterList(label)
-        self.main_layout.addWidget(letter_list)
+        self.main_layout.addWidget(self.letter_list)
 
         ready_button_layout = QHBoxLayout()
         ready_button = QPushButton("Ready!")
@@ -93,7 +96,6 @@ class MainWindow(QWidget):
         self.setLayout(self.main_layout)
 
     def add_line(self, input=""):
-        print("input: ", input)
         """Add a new QLineEdit for unknown location letters"""
         line_edit = QLineEdit()
         line_edit.setPlaceholderText("Letter with unknown location...")
@@ -103,19 +105,29 @@ class MainWindow(QWidget):
 
     def on_ready_button_clicked(self):
         """Collect user inputs and print them"""
-        known_letters = [line_edit.text() for line_edit in self.known_location_inputs]
-        unknown_letters = [line_edit.text() for line_edit in self.unknown_location_inputs]
+        known_letters = [
+            line_edit.text() for line_edit in self.known_location_inputs if isinstance(line_edit, QLineEdit)
+        ]
+        unknown_letters = [
+            line_edit.text() for line_edit in self.unknown_location_inputs if isinstance(line_edit, QLineEdit)
+        ]
+        unwanted_letters = [
+            line_edit.text() if isinstance(line_edit, QLineEdit) else str(line_edit)
+            for line_edit in self.unwanted_letters
+        ]
 
         print(f"Known location letters: {known_letters}")
         print(f"Unknown location letters: {unknown_letters}")
+        print(f"Unwanted letters: {unwanted_letters}")
 
         self.known_location_inputs = known_letters
         self.unknown_location_inputs = unknown_letters
+        self.unwanted_letters = unwanted_letters
 
         self.clear_page()
 
-        #guess = best_guess(known_letters, unknown_letters)
-        guess = "words"
+        guess = best_guess(known_letters, unknown_letters)
+        #guess = "words"
         answer_label = QLabel(f"The bot's guess is: {guess}")
         answer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         answer_label.setStyleSheet("font-size: 18px; font-weight: bold;")
@@ -162,8 +174,9 @@ class Separator(QFrame):
         self.setFrameShadow(QFrame.Shadow.Sunken)
 
 class LetterList(QWidget):
-    def __init__(self, label=""):
+    def __init__(self, label="", unwanted_letters=None):
         super().__init__()
+        self.unwanted_letters = unwanted_letters
         self.list_layout = QVBoxLayout()
         self.list_layout.addWidget(QLabel(label))
 
@@ -172,13 +185,15 @@ class LetterList(QWidget):
         self.group_box.setLayout(self.group_box_layout)
         self.list_layout.addWidget(self.group_box)
 
-        # add_button_layout = QHBoxLayout()
-        # add_button_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
-        # add_button_layout.setSpacing(0)  # Reduce spacing
-        # add_button = QPushButton("Add")
-        # add_button.setFixedWidth(100)
-        # add_button_layout.addWidget(add_button)
-        # add_button.clicked.connect(self.add_line)
+        add_button_layout = QHBoxLayout()
+        add_button_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
+        add_button_layout.setSpacing(0)  # Reduce spacing
+        add_button = QPushButton("Add")
+        add_button.setFixedWidth(100)
+        add_button_layout.addWidget(add_button)
+        add_button.clicked.connect(lambda: self.add_line2())
+
+        self.group_box_layout.addLayout(add_button_layout)
 
         # for i in range(len(self.unknown_location_inputs)):
         #     if isinstance(self.unknown_location_inputs[i], QLineEdit):  
@@ -186,6 +201,15 @@ class LetterList(QWidget):
         # self.group_box_layout.addLayout(add_button_layout)
 
         self.setLayout(self.list_layout)
+
+    def add_line2(self, input=""):
+        print("input: ", input)
+        """Add a new QLineEdit for unknown location letters"""
+        line_edit = QLineEdit()
+        line_edit.setPlaceholderText("Letter with unknown location...")
+        line_edit.setText(input)  
+        self.group_box_layout.addWidget(line_edit)
+        self.unwanted_letters.append(line_edit)
 
 
 # If run directly, start the application
