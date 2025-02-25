@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, 
     QHBoxLayout, QLabel, QLineEdit, QGroupBox, QFrame
 )
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QPixmap
 from guess_calculator import best_guess
 
 import sys
@@ -39,6 +39,14 @@ class MainWindow(QWidget):
         font.setPointSize(14)  # Change the font size
         title.setFont(font)
         self.main_layout.addWidget(title)
+
+        self.label = QLabel(self)
+        pixmap = QPixmap("./assets/Wordle-Emblem.png")  
+        desired_width = 250
+        scaled_pixmap = pixmap.scaledToWidth(desired_width)
+        self.label.setPixmap(scaled_pixmap)
+        self.label.setFixedWidth(desired_width) 
+        self.main_layout.addWidget(self.label)
 
         separator = Separator()
         self.main_layout.addWidget(separator)
