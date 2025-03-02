@@ -1,7 +1,7 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, 
-    QHBoxLayout, QLabel, QLineEdit, QGroupBox, QFrame
+    QHBoxLayout, QLabel, QLineEdit, QGroupBox, QFrame, QScrollArea
 )
 from PyQt6.QtGui import QFont, QPixmap
 from guess_calculator import best_guess
@@ -16,6 +16,9 @@ class MainWindow(QWidget):
         self.setGeometry(100, 100, 400, 200)
         
         self.main_layout = QVBoxLayout(self)
+
+        # scroll_area = QScrollArea(self)
+        # scroll_area.setWidgetResizable(True)
 
         self.init_ui(known_location, unknown_locations, unwanted)
 
@@ -40,16 +43,16 @@ class MainWindow(QWidget):
         title.setFont(font)
         self.main_layout.addWidget(title)
 
-        self.label = QLabel(self)
-        pixmap = QPixmap("./assets/Wordle-Emblem.png")  
-        desired_width = 250
-        scaled_pixmap = pixmap.scaledToWidth(desired_width)
-        self.label.setPixmap(scaled_pixmap)
-        self.label.setFixedWidth(desired_width) 
-        self.main_layout.addWidget(self.label)
+        # self.label = QLabel(self)
+        # pixmap = QPixmap("./assets/Wordle-Emblem.png")  
+        # desired_width = 250
+        # scaled_pixmap = pixmap.scaledToWidth(desired_width)
+        # self.label.setPixmap(scaled_pixmap)
+        # self.label.setFixedWidth(desired_width) 
+        # self.main_layout.addWidget(self.label)
 
-        separator = Separator()
-        self.main_layout.addWidget(separator)
+        # separator = Separator()
+        # self.main_layout.addWidget(separator)
 
         label_known_location = QLabel("Letters with known location: ")
         self.main_layout.addWidget(label_known_location)

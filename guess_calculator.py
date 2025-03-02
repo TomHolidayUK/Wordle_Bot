@@ -79,14 +79,53 @@ unknown_letters = ['a']
 unwanted_letters = ['e']
 #abbey
 
+def loop_all_words(exact_letters, available_letters, required_letters, allow_repetition):
+    potential_guesses = []
+    
+    # loop through all possible words
+    for word in possible_words:
+        previous_letters = set()
+        for i, char in enumerate(word):
+            # first check aligns with known exact letters
+            if i in exact_letters and exact_letters[i] != char and exact_letters[i] != "":
+                break
+
+            if char not in available_letters:
+                break
+
+            # check there's no unwanted letters - red letters
+            if char in unwanted_letters:
+                break
+  
+
+            # check no repetition
+            if not allow_repetition:
+                if char in previous_letters:
+                    break
+                else:
+                    previous_letters.add(char)
+
+        # also check it includes required letters (where position is unknown)
+        for required_letter in required_letters:
+            if required_letter not in word:
+                break
+        
+        # if we haven't found any guesses without repetition, try with
+        potential_guesses.append(word)
+
+    return potential_guesses
+
+
 # find the best guess
 def best_guess(known_letters, unknown_letters, unwanted_letters):
     # this will be based on 2 things:
     # 1 - starting criteria (if info has been gained form previous guesses, we will use it to form our next guess)
-    # 2 - try to use most common letters whilst also avoiding repeated letters if possible     
+    # 2 - try to use most common letters whilst also avoiding repeated letters if possible  
+    # 
+    # we need to first try to find a guess without letter repetition, if this isn;t possible then try again with repetition   
 
     found_match = False
-    common_letters = 5 # the number of most common letters to try 
+    common_letters = 0 # the number of most common letters to try 
     potential_guesses = []
 
     while not found_match:
@@ -116,6 +155,7 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
         # loop through all possible words
         for word in possible_words:
             possible = True
+            previous_letters = set()
             for i, char in enumerate(word):
                 # first check aligns with known exact letters
                 if i in exact_letters and exact_letters[i] != char and exact_letters[i] != "":
@@ -131,24 +171,28 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
                     possible = False
                     break   
 
+                # check no repetition
+                if char in previous_letters:
+                    possible = False
+                    break
+                else:
+                    previous_letters.add(char)
+
             # also check it includes required letters (where position is unknown)
             for required_letter in required_letters:
                 if required_letter not in word:
                     possible = False
                     break
-            
-            # first try to find guesses without any repetition
-            if possible and repeated_letters(word) == False:
+
+            # word is valid - add 
+            if possible:
                 potential_guesses.append(word)
                 found_match = True
-            
-            # if we haven't found any guesses without repetition, try with
-            if possible and len(potential_guesses) == 0:
-                potential_guesses.append(word)
-                found_match = True
+
+        # print("TEST: ", loop_all_words(exact_letters, available_letters, required_letters, False))
+        # potential_guesses = loop_all_words(exact_letters, available_letters, required_letters, False)
 
         common_letters += 1
-
 
     print(potential_guesses)
 
