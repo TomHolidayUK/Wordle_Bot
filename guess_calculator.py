@@ -115,21 +115,14 @@ def loop_all_words(exact_letters, available_letters, required_letters, allow_rep
 
     return potential_guesses
 
-
-# find the best guess
-def best_guess(known_letters, unknown_letters, unwanted_letters):
-    # this will be based on 2 things:
-    # 1 - starting criteria (if info has been gained form previous guesses, we will use it to form our next guess)
-    # 2 - try to use most common letters whilst also avoiding repeated letters if possible  
-    # 
-    # we need to first try to find a guess without letter repetition, if this isn;t possible then try again with repetition   
-
+def find_matches(known_letters, unknown_letters, unwanted_letters, allow_repetition):
     found_match = False
+    not_possible = False
     common_letters = 0 # the number of most common letters to try 
     potential_guesses = []
+    available_letters = []
 
-    while not found_match:
-        available_letters = []
+    while not found_match and not_possible == False:
 
         exact_letters = dict() # letters where we know the exact position
         required_letters = set() # letters we know are part of the word (and so are required) but we don't know the position
@@ -141,16 +134,19 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
         for i, letter in enumerate(known_letters):
             exact_letters[i] = letter
 
-        print(exact_letters)
-
         for i in range(common_letters):
             if i == 26:
-                return "no word found"
+                print("no word found without repetition")
+                not_possible = True
+                break
             letter_to_add = letter_frequency_sorted[i][0]
             if letter_to_add not in available_letters:
                 available_letters.append(letter_to_add)
 
-        print("available letters: ", available_letters)
+        #print("available letters: ", available_letters)
+
+        if not_possible:
+            break
 
         # loop through all possible words
         for word in possible_words:
@@ -170,13 +166,14 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
                 if char in unwanted_letters:
                     possible = False
                     break   
-
-                # check no repetition
-                if char in previous_letters:
-                    possible = False
-                    break
-                else:
-                    previous_letters.add(char)
+                
+                if not allow_repetition:
+                    # check no repetition
+                    if char in previous_letters:
+                        possible = False
+                        break
+                    else:
+                        previous_letters.add(char)
 
             # also check it includes required letters (where position is unknown)
             for required_letter in required_letters:
@@ -189,20 +186,30 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
                 potential_guesses.append(word)
                 found_match = True
 
-        # print("TEST: ", loop_all_words(exact_letters, available_letters, required_letters, False))
-        # potential_guesses = loop_all_words(exact_letters, available_letters, required_letters, False)
-
         common_letters += 1
 
-    print(potential_guesses)
+    return potential_guesses
+
+
+# find the best guess
+def best_guess(known_letters, unknown_letters, unwanted_letters):
+    # we try to make a guess using the most common letters possible
+    # we first try to find a guess without letter repetition, to maximise the chance of finding a letter rin the word
+    # if this isn't possible we then try again with letter repetition   
+
+    guesses = find_matches(known_letters, unknown_letters, unwanted_letters, False)
+    print("guesses without repetition: ", guesses)
+
+    if len(guesses) == 0:
+        guesses = find_matches(known_letters, unknown_letters, unwanted_letters, True)
+        print("guesses with repetition: ", guesses)
 
     # worth evaluating which word most commonly appears in texts as this will be more likely to be a correct guess
-    potential_guesses_str = ""
-    for guess in potential_guesses:
-        potential_guesses_str += guess + ","
+    guesses_str = ""
+    for guess in guesses:
+        guesses_str += guess + ","
 
-
-    return most_commonly_used_word(potential_guesses_str)
+    return most_commonly_used_word(guesses_str)
 
 
 #best_guess(known_letters, unknown_letters, unwanted_letters)
