@@ -16,7 +16,7 @@ from guess_calculator import best_guess
 with open("possible_words.json", "r") as file:
     possible_words = json.load(file)
 
-NUMBER_OF_TESTS = 25
+NUMBER_OF_TESTS = 500
 
 guess_distribution = {
     6: 0,
@@ -122,18 +122,19 @@ print(win_percentage)
 print(max_streak)
 
 def open_stats(data):
-    categories = []
-    values = []
+    attempts = []
+    frequencies = []
 
-    for key, value in data.items():
-        categories.append(key)
-        values.append(value)
+    for attempt, frequency in data.items():
+        attempts.append(attempt)
+        frequencies.append(frequency)
 
     figure, ax = plt.subplots(figsize=(6, 4))
-    ax.barh(categories, values, color='skyblue')
-    ax.set_title('Horizontal Bar Chart')
-    ax.set_xlabel('Values')
-    ax.set_ylabel('Categories')
+    ax.barh(attempts, frequencies, color='skyblue')
+    ax.invert_yaxis()
+    ax.set_title('Guess Distribution')
+    ax.set_xlabel('Frequency')
+    ax.set_ylabel('No. of Attempts')
 
     return figure
 
@@ -174,5 +175,4 @@ window.show()
 sys.exit(app.exec_())
 
 
-# FAILS: 
-# krill, woozy, dopey
+failures = ["krill", "woozy","dopey"]
