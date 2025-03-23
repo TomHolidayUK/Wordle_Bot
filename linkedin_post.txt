@@ -1,0 +1,11 @@
+The aim is to create a bot that makes the best statistically-possible Wordle guesses
+By best statistically-possible guess, I mean a guess that uses the most common letters possible each time
+This will involve looping over a long list of possible words each time, I will try to optimise this performance
+Over time I hope this bot will yield impressive stats
+
+I have grabbed the 14885 words in the wordle word list from the Wordle source code (available via developer tools)
+
+I have trained on possible words (previously in source code but now available on github)
+Scrape a website for previous words so these aren't included when tryig to find a solution
+
+We first try tomake guesses without any repeated letters, but if this isn't possible we try with

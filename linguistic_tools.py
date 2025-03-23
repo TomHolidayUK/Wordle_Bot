@@ -11,11 +11,24 @@ def most_commonly_used_word(words, start_year=2021,
 
     url = 'https://books.google.com/ngrams/json?content=' + words + '&year_start=' + str(start_year) + '&year_end=' + str(end_year) + '&corpus=' + str(corpus) + '&smoothing=' + str(smoothing) + '' 
   
-    # requesting data from the above url 
-    response = requests.get(url) 
-  
-    # extracting the json data  
-    output = response.json() 
+    try:
+        response = requests.get(url, timeout=5)  # Set timeout to avoid hanging requests
+        if response.status_code != 200:
+            if response.status_code == 429:
+                retry_after = response.headers.get("Retry-After")
+                print(f"Rate limited! Retry after: {retry_after} seconds")
+            print(f"Error: Received status code {response.status_code} from Google Ngram API")
+            return f"Error: Received status code {response.status_code} from Google Ngram API"
+
+        if not response.text.strip():  # Check if response is empty
+            return "Error: Received an empty response from Google Ngram API"
+
+        output = response.json()
+    except requests.exceptions.RequestException as e:
+        return f"Request failed: {e}"
+    except requests.exceptions.JSONDecodeError:
+        return "Error: Failed to decode JSON from Google Ngram API"
+
     return_data = [] 
   
     if len(output) == 0: 
@@ -32,7 +45,7 @@ def most_commonly_used_word(words, start_year=2021,
             max_frequency = max(data[1])
             most_common_word = data[0]
 
-    print(f"most common word is '{most_common_word}' with a frequency of {max_frequency}")
+    #print(f"most common word is '{most_common_word}' with a frequency of {max_frequency}")
 
     return most_common_word
 
