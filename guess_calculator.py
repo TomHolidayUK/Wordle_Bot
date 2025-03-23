@@ -10,8 +10,11 @@
 import json
 from linguistic_tools import most_commonly_used_word, repeated_letters
 
-with open("words.json", "r") as file:
-    wordle_words = json.load(file)
+with open("all_words.json", "r") as file:
+    all_words = json.load(file)
+
+with open("possible_words.json", "r") as file:
+    possible_words = json.load(file)
 
 # previous words grabbed from https://www.rockpapershotgun.com/wordle-past-answers
 # AUTOMATE THIS!
@@ -22,7 +25,7 @@ previous_words = [word.lower() for word in previous_words_upper_case]
 
 # take previous worlde answers from word list to get possible words
 possible_words = []
-for word in wordle_words:
+for word in all_words:
     if word not in previous_words:
         possible_words.append(word)
 
@@ -74,9 +77,9 @@ for i in range(26):
 print(letter_frequency_sorted)
 
 starting_criteria =  {'b': '2', 'y': '5', 'a': 0} 
-known_letters = ['', 'b', '', '', 'y']
-unknown_letters = ['a']
-unwanted_letters = ['e']
+greens = ['', 'b', '', '', 'y']
+yellows = ['a']
+greys = ['e']
 #abbey
 
 def loop_all_words(exact_letters, available_letters, required_letters, allow_repetition):
@@ -94,7 +97,7 @@ def loop_all_words(exact_letters, available_letters, required_letters, allow_rep
                 break
 
             # check there's no unwanted letters - red letters
-            if char in unwanted_letters:
+            if char in greys:
                 break
   
 
@@ -115,7 +118,7 @@ def loop_all_words(exact_letters, available_letters, required_letters, allow_rep
 
     return potential_guesses
 
-def find_matches(known_letters, unknown_letters, unwanted_letters, allow_repetition):
+def find_matches(greens, yellows, greys, nots, allow_repetition):
     found_match = False
     not_possible = False
     common_letters = 0 # the number of most common letters to try 
@@ -127,11 +130,11 @@ def find_matches(known_letters, unknown_letters, unwanted_letters, allow_repetit
         exact_letters = dict() # letters where we know the exact position
         required_letters = set() # letters we know are part of the word (and so are required) but we don't know the position
 
-        for letter in unknown_letters:
+        for letter in yellows:
             available_letters.append(letter)
             required_letters.add(letter)
         
-        for i, letter in enumerate(known_letters):
+        for i, letter in enumerate(greens):
             exact_letters[i] = letter
 
         for i in range(common_letters):
@@ -163,7 +166,7 @@ def find_matches(known_letters, unknown_letters, unwanted_letters, allow_repetit
                     break
 
                 # check there's no unwanted letters - red letters
-                if char in unwanted_letters:
+                if char in greys:
                     possible = False
                     break   
                 
@@ -174,6 +177,11 @@ def find_matches(known_letters, unknown_letters, unwanted_letters, allow_repetit
                         break
                     else:
                         previous_letters.add(char)
+
+                # check that this letter is not in 'nots' - yellow at this location so therefore not here
+                if len(nots[i]) != 0 and char in nots[i]:
+                    possible = False
+                    break
 
             # also check it includes required letters (where position is unknown)
             for required_letter in required_letters:
@@ -192,16 +200,16 @@ def find_matches(known_letters, unknown_letters, unwanted_letters, allow_repetit
 
 
 # find the best guess
-def best_guess(known_letters, unknown_letters, unwanted_letters):
+def best_guess(greens, yellows, greys, nots):
     # we try to make a guess using the most common letters possible
     # we first try to find a guess without letter repetition, to maximise the chance of finding a letter rin the word
     # if this isn't possible we then try again with letter repetition   
 
-    guesses = find_matches(known_letters, unknown_letters, unwanted_letters, False)
+    guesses = find_matches(greens, yellows, greys, nots, False)
     print("guesses without repetition: ", guesses)
 
     if len(guesses) == 0:
-        guesses = find_matches(known_letters, unknown_letters, unwanted_letters, True)
+        guesses = find_matches(greens, yellows, greys, nots, True)
         print("guesses with repetition: ", guesses)
 
     # worth evaluating which word most commonly appears in texts as this will be more likely to be a correct guess
@@ -212,7 +220,7 @@ def best_guess(known_letters, unknown_letters, unwanted_letters):
     return most_commonly_used_word(guesses_str)
 
 
-#best_guess(known_letters, unknown_letters, unwanted_letters)
+#best_guess(greens, yellows, greys)
 
 # things to improve:
 # I would like to get the bot to play automtically, I believe i can do this by using selenium to control a web browser
