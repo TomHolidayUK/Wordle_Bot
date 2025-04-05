@@ -16,4 +16,4 @@ The bot has a user interface that works in a similar way to the real Wordle game
 
 ![Worlde bot in action](assets/bot_ui.png)
 
-I need to compile this into an exectuable at some point
+I need to compile this into an exectuable at some point. I am using python and pyqt for this project.
