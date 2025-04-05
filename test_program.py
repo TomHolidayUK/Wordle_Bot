@@ -18,6 +18,7 @@ with open("possible_words.json", "r") as file:
 
 NUMBER_OF_TESTS = 500
 
+
 guess_distribution = {
     6: 0,
     5: 0,
