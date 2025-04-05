@@ -9,3 +9,5 @@ Here are my personal stats:
 ![Screenshot of my personal stats](assets/my_stats.png)
 
 And here are the stats of Version 1:
+
+![Screenshot of wordlebot v1's stats](assets/wordle_bot_v1_stats.png)
